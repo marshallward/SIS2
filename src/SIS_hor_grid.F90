@@ -10,7 +10,7 @@ module SIS_hor_grid
 
 use MOM_hor_index, only : hor_index_type, hor_index_init
 use MOM_domains, only : MOM_domain_type, get_domain_extent, compute_block_extent
-use MOM_domains, only : MOM_domains_init, clone_MOM_domain
+use MOM_domains, only : MOM_domains_init, clone_MOM_domain, deallocate_MOM_domain
 use MOM_error_handler, only : SIS_error=>MOM_error, FATAL, WARNING, SIS_mesg=>MOM_mesg
 use MOM_file_parser, only : get_param, log_param, log_version, param_file_type
 use MOM_unit_scaling, only : unit_scale_type
@@ -528,9 +528,7 @@ subroutine SIS_hor_grid_end(G)
   deallocate(G%gridLonT) ; deallocate(G%gridLatT)
   deallocate(G%gridLonB) ; deallocate(G%gridLatB)
 
-  deallocate(G%Domain%mpp_domain)
-  deallocate(G%Domain)
-
+  call deallocate_MOM_domain(G%Domain)
 end subroutine SIS_hor_grid_end
 
 end module SIS_hor_grid

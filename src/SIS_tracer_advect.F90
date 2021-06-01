@@ -1901,12 +1901,10 @@ subroutine SIS_tracer_advect_init(Time, G, param_file, diag, CS, scheme)
 end subroutine SIS_tracer_advect_init
 
 !> Deallocate memory associated with the SIS_tracer_advect control structure
+! NOTE: Placeholder destructor function
 subroutine SIS_tracer_advect_end(CS)
-  type(SIS_tracer_advect_CS), pointer :: CS  !< The control structure returned by a previous
-                                             !! call to SIS_tracer_advect_init.
-
-  if (associated(CS)) deallocate(CS)
-
+  type(SIS_tracer_advect_CS), intent(inout) :: CS   !< The control structure returned by a previous
+                                                    !! call to SIS_tracer_advect_init.
 end subroutine SIS_tracer_advect_end
 
 !*  By Robert Hallberg, 1996 - 2012, adapted for SIS2 in 2014-2016.    *

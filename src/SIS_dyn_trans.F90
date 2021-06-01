@@ -47,6 +47,7 @@ use SIS_framework,     only : coupler_type_initialized, coupler_type_send_data, 
 use SIS_hor_grid,      only : SIS_hor_grid_type
 use SIS_ice_diags,     only : ice_state_diags_type, register_ice_state_diagnostics
 use SIS_ice_diags,     only : post_ocean_sfc_diagnostics, post_ice_state_diagnostics
+use SIS_ice_diags,     only : ice_state_diagnostics_end
 use SIS_sum_output,    only : write_ice_statistics, SIS_sum_output_init, SIS_sum_out_CS
 use SIS_tracer_flow_control, only : SIS_tracer_flow_control_CS
 use SIS_transport,     only : SIS_transport_init, SIS_transport_end
@@ -2439,6 +2440,11 @@ end function SIS_dyn_trans_sum_output_CS
 subroutine SIS_dyn_trans_end(CS)
   type(dyn_trans_CS), pointer :: CS  !< The control structure for the SIS_dyn_trans module that
                                      !! is dellocated here
+
+  call ice_state_diagnostics_end(CS%IDs)
+  deallocate(CS%IDs)
+
+  deallocate(CS%sum_output_CSp)
 
   if (associated(CS%DS2d)) then
     if (allocated(CS%DS2d%mi_sum)) deallocate(CS%DS2d%mi_sum)

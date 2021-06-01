@@ -35,7 +35,8 @@ implicit none ; private
 
 #include <SIS2_memory.h>
 
-public :: post_ocean_sfc_diagnostics, post_ice_state_diagnostics, register_ice_state_diagnostics
+public :: post_ocean_sfc_diagnostics, post_ice_state_diagnostics
+public :: register_ice_state_diagnostics, ice_state_diagnostics_end
 
 !> This structure has the IDs used for sea-ice state diagnostics.
 type, public :: ice_state_diags_type ; private
@@ -400,5 +401,13 @@ subroutine safe_alloc_ids_1d(ids, nids)
   endif;
 end subroutine safe_alloc_ids_1d
 
+
+!> Deallocate the contents of the ice state diagnostic handlers
+subroutine ice_state_diagnostics_end(IDs)
+  type(ice_state_diags_type), intent(inout) :: IDs
+
+  deallocate(IDs%id_t)
+  deallocate(IDs%id_sal)
+end subroutine ice_state_diagnostics_end
 
 end module SIS_ice_diags

@@ -927,6 +927,23 @@ subroutine SIS_diag_mediator_end(time, diag_CS)
     close(diag_CS%doc_unit) ; diag_CS%doc_unit = -3
   endif
 
+  deallocate(diag_cs%mask3dCvc)
+  deallocate(diag_cs%mask3dCuc)
+  deallocate(diag_cs%mask3dBuc)
+  deallocate(diag_cs%mask3dTc)
+
+  deallocate(diag_cs%mask3dCvi)
+  deallocate(diag_cs%mask3dCui)
+  deallocate(diag_cs%mask3dBui)
+  deallocate(diag_cs%mask3dTi)
+
+  deallocate(diag_cs%mask3dCvL)
+  deallocate(diag_cs%mask3dCuL)
+  deallocate(diag_cs%mask3dBuL)
+  deallocate(diag_cs%mask3dTL)
+
+  deallocate(diag_cs%mask2dT_comp)
+
 end subroutine SIS_diag_mediator_end
 
 !> Allocate a new diagnostic id, noting that it may be necessary to expand the diagnostics array.

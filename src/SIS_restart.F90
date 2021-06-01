@@ -1378,7 +1378,7 @@ end subroutine restore_SIS_state
 
 !> Deallocate memory associated with a SIS_restart_CS variable.
 subroutine SIS_restart_end(CS)
-  type(SIS_restart_CS),  pointer    :: CS !< A pointer to a SIS_restart_CS object
+  type(SIS_restart_CS),  intent(inout) :: CS !< A pointer to a SIS_restart_CS object
 
   if (associated(CS%restart_field)) deallocate(CS%restart_field)
   if (associated(CS%restart_obsolete)) deallocate(CS%restart_obsolete)
@@ -1387,8 +1387,6 @@ subroutine SIS_restart_end(CS)
   if (associated(CS%var_ptr2d)) deallocate(CS%var_ptr2d)
   if (associated(CS%var_ptr3d)) deallocate(CS%var_ptr3d)
   if (associated(CS%var_ptr4d)) deallocate(CS%var_ptr4d)
-  deallocate(CS)
-
 end subroutine SIS_restart_end
 
 end module SIS_restart

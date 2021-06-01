@@ -74,7 +74,8 @@ use SIS_fast_thermo,   only : do_update_ice_model_fast, avg_top_quantities, tota
 use SIS_fast_thermo,   only : redo_update_ice_model_fast, find_excess_fluxes
 use SIS_fast_thermo,   only : infill_array, SIS_fast_thermo_init, SIS_fast_thermo_end
 use SIS_framework,     only : set_domain, nullify_domain, broadcast_domain
-use SIS_restart,       only : restore_SIS_state, query_initialized=>query_inited, SIS_restart_init
+use SIS_restart,       only : restore_SIS_state, query_initialized=>query_inited
+use SIS_restart,       only : SIS_restart_init, SIS_restart_end
 use SIS_restart,       only : determine_is_new_run, is_new_run
 use SIS_framework,     only : coupler_1d_bc_type, coupler_2d_bc_type, coupler_3d_bc_type
 use SIS_framework,     only : coupler_type_spawn, coupler_type_initialized
@@ -92,6 +93,7 @@ use SIS_sum_output,    only : SIS_sum_output_init,  write_ice_statistics
 use SIS_tracer_flow_control, only : SIS_call_tracer_register, SIS_tracer_flow_control_init
 use SIS_tracer_flow_control, only : SIS_tracer_flow_control_end
 use SIS_tracer_registry, only : register_SIS_tracer, register_SIS_tracer_pair
+use SIS_tracer_registry, only : SIS_tracer_registry_end
 use SIS_transcribe_grid, only : copy_dyngrid_to_SIS_horgrid, copy_SIS_horgrid_to_dyngrid
 use SIS_transport,     only : adjust_ice_categories
 use SIS_types,         only : ice_ocean_flux_type, alloc_ice_ocean_flux, dealloc_ice_ocean_flux
@@ -2718,7 +2720,10 @@ subroutine ice_model_end(Ice)
 
     call dealloc_ice_rad(Ice%fCS%Rad)
     call dealloc_total_sfc_flux(Ice%fCS%TSF)
+    deallocate(Ice%fCS%TSF)
+
     call ice_grid_end(Ice%fCS%IG)
+    deallocate(Ice%fCS%IG)
 
     if (.not.associated(Ice%sCS)) then
       call dealloc_IST_arrays(Ice%fCS%IST)
@@ -2740,10 +2745,11 @@ subroutine ice_model_end(Ice)
         call SIS_hor_grid_end(Ice%fCS%G)
     endif
 
-    if (associated(Ice%Ice_fast_restart) .and. &
-        (.not.associated(Ice%Ice_fast_restart, Ice%Ice_restart))) &
+    if (associated(Ice%Ice_fast_restart) &
+        .and. .not. associated(Ice%Ice_fast_restart, Ice%Ice_restart)) then
+      call SIS_restart_end(Ice%Ice_fast_restart)
       deallocate(Ice%Ice_fast_restart)
-
+    endif
   endif
 
   if (slow_ice_PE) then
@@ -2755,6 +2761,8 @@ subroutine ice_model_end(Ice)
       call specified_ice_end(Ice%sCS%specified_ice_CSp)
 
     call SIS_slow_thermo_end(Ice%sCS%slow_thermo_CSp)
+
+    call SIS_tracer_registry_end(Ice%sCS%IST%TrReg)
 
     call ice_thermo_end(Ice%sCS%IST%ITV)
 
@@ -2770,7 +2778,11 @@ subroutine ice_model_end(Ice)
       call SIS_optics_end(Ice%sCS%optics_CSp)
 
       call dealloc_total_sfc_flux(Ice%sCS%TSF)
+      deallocate(Ice%sCS%TSF)
+
       call dealloc_total_sfc_flux(Ice%sCS%XSF)
+      deallocate(Ice%sCS%XSF)
+
       call dealloc_ice_rad(Ice%sCS%Rad)
     endif
 
@@ -2779,6 +2791,7 @@ subroutine ice_model_end(Ice)
     call dealloc_simple_OSS(Ice%sCS%sOSS)
 
     call ice_grid_end(Ice%sCS%IG)
+    deallocate(Ice%sCS%IG)
 
     call dealloc_IST_arrays(Ice%sCS%IST)
     deallocate(Ice%sCS%IST)
@@ -2790,7 +2803,10 @@ subroutine ice_model_end(Ice)
 
   call dealloc_Ice_arrays(Ice)
 
-  if (associated(Ice%Ice_restart)) deallocate(Ice%Ice_restart)
+  if (associated(Ice%Ice_restart)) then
+    call SIS_restart_end(Ice%Ice_restart)
+    deallocate(Ice%Ice_restart)
+  endif
 
   if (slow_ice_PE) then
     call SIS_diag_mediator_end(Ice%sCS%Time, Ice%sCS%diag)

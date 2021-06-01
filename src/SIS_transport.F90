@@ -1280,8 +1280,10 @@ subroutine SIS_transport_end(CS)
   type(SIS_transport_CS), pointer :: CS  !< The control structure for this module that
                                          !! is deallocated here
 
+  deallocate(CS%SIS_thick_adv_CSp)
+  deallocate(CS%SIS_tr_adv_CSp)
+
   call SIS_continuity_end(CS%continuity_CSp)
-  call SIS_tracer_advect_end(CS%SIS_tr_adv_CSp)
 
   deallocate(CS)
 end subroutine SIS_transport_end
