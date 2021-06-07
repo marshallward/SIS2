@@ -418,7 +418,8 @@ subroutine set_massless_SIS_tracers(mass, TrReg, G, IG, compute_domain, do_snow,
   real, dimension(SZI_(G),SZJ_(G),SZCAT_(IG)), &
                                   intent(in)    :: mass !< The ice or snow mass [R Z ~> kg m-2].
   type(SIS_tracer_registry_type), intent(inout) :: TrReg !< A pointer to the SIS tracer registry
-  logical,              optional, intent(in) :: compute_domain !< If true, work over the whole data domain
+  logical,              optional, intent(in) :: compute_domain !< If present and false,
+                                                               !! work over the whole data domain
   logical,              optional, intent(in) :: do_snow !< If true, work on snow tracers; the default is true.
   logical,              optional, intent(in) :: do_ice  !< If true, work on ice tracers; the default is true.
 
@@ -426,7 +427,7 @@ subroutine set_massless_SIS_tracers(mass, TrReg, G, IG, compute_domain, do_snow,
   logical :: do_snow_tr, do_ice_tr
 
   is = G%isc ; ie = G%iec ; js = G%jsc ; je = G%jec ; nCat = IG%CatIce
-  if (present(compute_domain)) then ; if (compute_domain) then
+  if (present(compute_domain)) then ; if (.not. compute_domain) then
     is = G%isd ; ie = G%ied ; js = G%jsd ; je = G%jed
   endif ; endif
 
